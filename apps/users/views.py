@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics, viewsets
+from rest_framework import status, viewsets, views
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.users.serializers import (
@@ -107,7 +107,8 @@ class Login(TokenObtainPairView):
         )
 
 
-class Logout(generics.GenericAPIView):
+class Logout(views.APIView):
+    serializer_class = None
     def post(self, request, *args, **kwargs):
         user = self.request.user
         if user:
