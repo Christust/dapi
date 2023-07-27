@@ -17,10 +17,11 @@ class UserManager(BaseUserManager):
     # Función base que utilizaran nuestras funciones para crear usuarios normales o superusuario
     def _create_user(
         self,
-        username: str,
         email: str,
         name: str,
         last_name: str,
+        tuition: str | None,
+        curp: str | None,
         password: str | None,
         is_staff: bool,
         is_superuser: bool,
@@ -32,8 +33,9 @@ class UserManager(BaseUserManager):
 
         # Instanciamos el modelo con los parametros recibidos
         user = self.model(
-            username=username,
             email=email,
+            tuition = tuition,
+            curp = curp,
             name=name,
             last_name=last_name,
             is_staff=is_staff,
@@ -51,10 +53,11 @@ class UserManager(BaseUserManager):
     # Función para crear usuarios normales
     def create_user(
         self,
-        username: str,
         email: str,
         name: str,
         last_name: str,
+        tuition: str | None = None,
+        curp: str | None = None,
         password: str | None = None,
         **extra_fields,
     ):
@@ -64,16 +67,17 @@ class UserManager(BaseUserManager):
 
         # Con los parametros recibidos creamos un usuario normal llamando _create_user
         return self._create_user(
-            username, email, name, last_name, password, False, False, **extra_fields
+            email, tuition, curp, name, last_name, password, False, False, **extra_fields
         )
 
     # Función para crear superusuarios
     def create_superuser(
         self,
-        username: str,
         email: str,
         name: str,
         last_name: str,
+        tuition: str | None = None,
+        curp: str | None = None,
         password: str | None = None,
         **extra_fields,
     ):
@@ -83,19 +87,19 @@ class UserManager(BaseUserManager):
 
         # Con los parametros recibidos creamos un superusuario llamando _create_user
         return self._create_user(
-            username, email, name, last_name, password, True, True, **extra_fields
+            email, tuition, curp, name, last_name, password, True, True, **extra_fields
         )
 
 
 class User(AbstractBaseUser):
     # Atributo principal de nuestro modelo persoanlizado
-    username = models.CharField("Username", unique=True, max_length=100)
+    email = models.EmailField("Email", unique=True, max_length=100)
 
     # Atributos extra que personalizamos para nuestro modelo
-    email = models.EmailField("Email", unique=True, max_length=100)
     name = models.CharField("Name", max_length=100, blank=True, null=True)
     last_name = models.CharField("Lastname", max_length=100, blank=True, null=True)
-    image = models.ImageField("Image", upload_to="perfil/", max_length=200, height_field=None, width_field=None, blank=True, null=True)  # type: ignore
+    curp = models.CharField("CURP", max_length=100, blank=True, null=True)
+    tuition = models.CharField("Tuition", max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -125,15 +129,15 @@ class User(AbstractBaseUser):
     # Atributos necesarios para un modelo de usuario
 
     # El atributo USERNAME_FIELD es para delcarar el atributo principal de la clase
-    USERNAME_FIELD = "username"
+    USERNAME_FIELD = "email"
 
     # El atributo REQUIRED_FIELDS se usa para declarar los atributos requeridos al crear un usuario
-    REQUIRED_FIELDS = ["email", "name", "last_name"]
+    REQUIRED_FIELDS = ["name", "last_name"]
 
     # Función para declarar la llave natural del modelo, si hay relaciones uno a muchos o muchos
     # a muchos, en lugar de mostrar el id, mostrara lo que esta función nos retorne
     def natural_key(self):
-        return self.username
+        return self.email
 
     # Función para retornar un string al llamar una instancia de este modelo
     def __str__(self):
