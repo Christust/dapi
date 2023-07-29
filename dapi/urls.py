@@ -7,6 +7,8 @@ from apps.users.views import Login, Logout
 
 
 urlpatterns = [
+    # Swagger
+    path("", include("dapi.swagger_config")),
     # Auth
     path("login/", Login.as_view(), name="login"),
     path("logout/", Logout.as_view(), name="logout"),
@@ -14,5 +16,5 @@ urlpatterns = [
     # Apps
     path("admin/", admin.site.urls),
     path("users/", include("apps.users.urls")),
-    path("", include("dapi.swagger_config")),
+    path("maintenance/", include("apps.maintenance.urls")),
 ]
