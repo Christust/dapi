@@ -1,30 +1,31 @@
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets, views
+from rest_framework import status, views
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.users.serializers import (
-    UserSerializer,
-    UserOutSerializer,
-    CustomTokenObtainPairSerializer,
-    PasswordSerializer,
-)
-from apps.users.models import User
+from apps.users import serializers, models
 from rest_framework_simplejwt.views import TokenObtainPairView
+from apps.base.views import BaseViewSet
 
 
-class UserViewSet(viewsets.GenericViewSet):
-    model = User
-    serializer_class = UserSerializer
-    out_serializer_class = UserOutSerializer
+class UserViewSet(BaseViewSet):
+    model = models.User
+    serializer_class = serializers.UserSerializer
+    out_serializer_class = serializers.UserOutSerializer
     queryset = serializer_class.Meta.model.objects.filter(is_active=True)
-
-    def get_object(self, pk):
-        return get_object_or_404(self.queryset, pk=pk)
+    permission_types = {
+        "list": ["admin"],
+        "retrieve": ["admin"],
+        "set_password": ["all"],
+        "create": ["admin"],
+        "update": ["admin"],
+    }
 
     def list(self, request):
-        users = self.queryset.all()
+        offset = int(self.request.query_params.get("offset", 0))
+        limit = int(self.request.query_params.get("limit", 10))
+
+        users = self.queryset.all()[offset : offset + limit]
         users_out_serializer = self.out_serializer_class(users, many=True)
         return Response(data=users_out_serializer.data, status=status.HTTP_200_OK)
 
@@ -61,16 +62,21 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=["post", "put"])
     def set_password(self, request, pk=None):
+        current_user = self.request.user
         user = self.get_object(pk)
-        password_serializer = PasswordSerializer(data=request.data)
-        if password_serializer.is_valid():
-            user.set_password(password_serializer.validated_data["password"])
-            user.save()
+        if current_user == user or current_user.is_superuser:
+            password_serializer = serializers.PasswordSerializer(data=request.data)
+            if password_serializer.is_valid():
+                user.set_password(password_serializer.validated_data["password"])
+                user.save()
+                return Response(
+                    data={"message": "Password updated"}, status=status.HTTP_200_OK
+                )
             return Response(
-                data={"message": "Password updated"}, status=status.HTTP_200_OK
+                data=password_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
         return Response(
-            data=password_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            data={"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED
         )
 
     def destroy(self, request, pk):
@@ -81,16 +87,16 @@ class UserViewSet(viewsets.GenericViewSet):
 
 
 class Login(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+    serializer_class = serializers.CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get("username", "")
+        email = request.data.get("email", "")
         password = request.data.get("password", "")
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
         if user and user.is_active:
             login_serializer = self.serializer_class(data=request.data)
             if login_serializer.is_valid():
-                user_serializer = UserOutSerializer(user)
+                user_serializer = serializers.UserOutSerializer(user)
                 return Response(
                     {
                         "token": login_serializer.validated_data.get("access"),
@@ -109,6 +115,7 @@ class Login(TokenObtainPairView):
 
 class Logout(views.APIView):
     serializer_class = None
+
     def post(self, request, *args, **kwargs):
         user = self.request.user
         if user:
