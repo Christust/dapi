@@ -1,6 +1,7 @@
 from django.db import models
 from apps.base.models import Base
 from apps.users.models import User
+from apps.branches.models import Area, Subarea
 
 
 # Create your models here.
@@ -39,6 +40,10 @@ class MaintenanceRequest(Base):
 
     feedback = models.CharField("Feedback", max_length=30, null=True, blank=True)
     cancel_note = models.CharField("Cancel note", max_length=35, null=True, blank=True)
+    area = models.ForeignKey(Area, on_delete=models.CASCADE, null=False, blank=False)
+    subarea = models.ForeignKey(
+        Subarea, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def natural_key(self):
         return self.description

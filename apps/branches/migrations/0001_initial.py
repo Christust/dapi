@@ -11,63 +11,75 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('branches', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MaintenanceType',
+            name='Area',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('is_active', models.BooleanField(default=True, verbose_name='Estado')),
                 ('created_at', models.DateField(auto_now_add=True, verbose_name='Fecha de creación')),
                 ('modified_at', models.DateField(auto_now=True, verbose_name='Fecha de modificación')),
                 ('deleted_at', models.DateField(blank=True, null=True, verbose_name='Fecha de eliminación')),
-                ('type', models.CharField(max_length=20, verbose_name='Type')),
-                ('description', models.TextField(blank=True, null=True, verbose_name='Description')),
+                ('name', models.CharField(max_length=30, verbose_name='Name')),
             ],
             options={
-                'verbose_name': 'Maintenance type',
-                'verbose_name_plural': 'Maintenance types',
+                'verbose_name': 'Area',
+                'verbose_name_plural': 'Areas',
             },
         ),
         migrations.CreateModel(
-            name='MaintenanceRequest',
+            name='Location',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('is_active', models.BooleanField(default=True, verbose_name='Estado')),
                 ('created_at', models.DateField(auto_now_add=True, verbose_name='Fecha de creación')),
                 ('modified_at', models.DateField(auto_now=True, verbose_name='Fecha de modificación')),
                 ('deleted_at', models.DateField(blank=True, null=True, verbose_name='Fecha de eliminación')),
-                ('description', models.CharField(max_length=25, verbose_name='Description')),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('finished', 'Finished'), ('canceled', 'Canceled')], max_length=20, verbose_name='Status')),
-                ('feedback', models.CharField(blank=True, max_length=30, null=True, verbose_name='Feedback')),
-                ('cancel_note', models.CharField(blank=True, max_length=35, null=True, verbose_name='Cancel note')),
+                ('name', models.CharField(max_length=30, verbose_name='Name')),
+            ],
+            options={
+                'verbose_name': 'Location',
+                'verbose_name_plural': 'Locations',
+            },
+        ),
+        migrations.CreateModel(
+            name='Subarea',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('is_active', models.BooleanField(default=True, verbose_name='Estado')),
+                ('created_at', models.DateField(auto_now_add=True, verbose_name='Fecha de creación')),
+                ('modified_at', models.DateField(auto_now=True, verbose_name='Fecha de modificación')),
+                ('deleted_at', models.DateField(blank=True, null=True, verbose_name='Fecha de eliminación')),
+                ('name', models.CharField(max_length=30, verbose_name='Name')),
                 ('area', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='branches.area')),
-                ('maintenance_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='maintenance.maintenancetype')),
-                ('subarea', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='branches.subarea')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Maintenance request',
-                'verbose_name_plural': 'Maintenance requests',
+                'verbose_name': 'Subarea',
+                'verbose_name_plural': 'Subareas',
             },
         ),
         migrations.CreateModel(
-            name='MaintenanceReport',
+            name='Branch',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('is_active', models.BooleanField(default=True, verbose_name='Estado')),
                 ('created_at', models.DateField(auto_now_add=True, verbose_name='Fecha de creación')),
                 ('modified_at', models.DateField(auto_now=True, verbose_name='Fecha de modificación')),
                 ('deleted_at', models.DateField(blank=True, null=True, verbose_name='Fecha de eliminación')),
-                ('description', models.CharField(max_length=25, verbose_name='Description')),
-                ('maintenance_request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='maintenance.maintenancerequest')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('name', models.CharField(max_length=30, verbose_name='Name')),
+                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='branches.location')),
+                ('users', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Maintenance report',
-                'verbose_name_plural': 'Maintenance reports',
+                'verbose_name': 'Branch',
+                'verbose_name_plural': 'Branches',
             },
+        ),
+        migrations.AddField(
+            model_name='area',
+            name='branch',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='branches.branch'),
         ),
     ]
