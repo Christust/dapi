@@ -11,6 +11,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # acciones de nuestro modelo
 from simple_history.models import HistoricalRecords
 
+from apps.branches.models import Branch
+
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -132,6 +134,8 @@ class User(AbstractBaseUser):
     user_type = models.CharField(
         "User type", max_length=20, choices=UserType.choices, blank=False, null=False
     )
+
+    branches = models.ManyToManyField(Branch)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

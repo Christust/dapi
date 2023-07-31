@@ -5,20 +5,20 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.users import serializers, models
 from rest_framework_simplejwt.views import TokenObtainPairView
-from apps.base.views import BaseViewSet
+from apps.base.views import BaseGenericViewSet
 
 
-class UserViewSet(BaseViewSet):
+class UserViewSet(BaseGenericViewSet):
     model = models.User
     serializer_class = serializers.UserSerializer
     out_serializer_class = serializers.UserOutSerializer
     queryset = serializer_class.Meta.model.objects.filter(is_active=True)
     permission_types = {
-        "list": ["admin"],
-        "retrieve": ["admin"],
+        "list": ["all"],
+        "retrieve": ["all"],
         "set_password": ["all"],
-        "create": ["admin"],
-        "update": ["admin"],
+        "create": ["all"],
+        "update": ["all"],
     }
 
     def list(self, request):
@@ -33,7 +33,8 @@ class UserViewSet(BaseViewSet):
         user_serializer = self.serializer_class(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
-            user_out_serializer = self.out_serializer_class(user_serializer.data)
+            user = self.get_object(user_serializer.data.get("id"))
+            user_out_serializer = self.out_serializer_class(user)
             return Response(
                 data=user_out_serializer.data, status=status.HTTP_201_CREATED
             )

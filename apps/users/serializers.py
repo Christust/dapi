@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apps.users.models import User
+from apps.branches.serializers import BranchSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -9,13 +10,20 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ["created_at", "updated_at", "last_login"]
 
     def create(self, validated_data):
+        branches = []
+        if validated_data.get("branches") != None:
+            branches = validated_data.pop("branches")
         user = User(**validated_data)
         user.set_password(validated_data["password"])
         user.save()
+        for branch in branches:
+            user.branches.add(branch)
         return user
 
 
 class UserOutSerializer(serializers.ModelSerializer):
+    branches = BranchSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         exclude = ["password", "created_at", "updated_at", "last_login"]
