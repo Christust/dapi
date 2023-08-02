@@ -16,6 +16,15 @@ urlpatterns = [
     # Apps
     path("admin/", admin.site.urls),
     path("users/", include("apps.users.urls")),
-    path("maintenance/", include("apps.maintenance.urls")),
-    path("branches/", include("apps.branches.urls")),
+    path("branches/", include("apps.branches.routers.router_branches")),
+    path("areas/", include("apps.branches.routers.router_areas")),
+    path("subareas/", include("apps.branches.routers.router_subareas")),
+    path("maintenance_types/", include("apps.maintenance.routers.maintenance_types")),
+    path(
+        "maintenance_requests/",
+        include("apps.maintenance.routers.maintenance_requests"),
+    ),
+    path(
+        "maintenance_reports/", include("apps.maintenance.routers.maintenance_reports")
+    ),
 ]

@@ -34,6 +34,12 @@ class PasswordSerializer(serializers.Serializer):
     password_confimation = serializers.CharField(max_length=120, min_length=6)
 
     def validate(self, data):
+        current_user = self.context["current_user"]
+        user = self.context["user"]
+        if current_user != user and not current_user.is_superuser:
+            raise serializers.ValidationError(
+                {"user": "Debe ser superadmin o el usuario a cambiar"}
+            )
         if data["password"] != data["password_confimation"]:
             raise serializers.ValidationError(
                 {"password": "Debe ingresar la misma contraseña"}

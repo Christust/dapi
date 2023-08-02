@@ -1,7 +1,7 @@
 from django.db import models
 from apps.base.models import Base
 from apps.users.models import User
-from apps.branches.models import Area, Subarea
+from apps.branches.models import Branch, Area, Subarea
 
 
 # Create your models here.
@@ -31,7 +31,12 @@ class MaintenanceRequest(Base):
         "Description", max_length=25, null=False, blank=False
     )
     status = models.CharField(
-        "Status", max_length=20, choices=Status.choices, null=False, blank=False
+        "Status",
+        max_length=20,
+        choices=Status.choices,
+        null=True,
+        blank=True,
+        default=Status.PENDING,
     )
     maintenance_type = models.ForeignKey(
         MaintenanceType, on_delete=models.CASCADE, null=False, blank=False
@@ -40,6 +45,9 @@ class MaintenanceRequest(Base):
 
     feedback = models.CharField("Feedback", max_length=30, null=True, blank=True)
     cancel_note = models.CharField("Cancel note", max_length=35, null=True, blank=True)
+    branch = models.ForeignKey(
+        Branch, on_delete=models.CASCADE, null=False, blank=False
+    )
     area = models.ForeignKey(Area, on_delete=models.CASCADE, null=False, blank=False)
     subarea = models.ForeignKey(
         Subarea, on_delete=models.CASCADE, null=True, blank=True

@@ -1,26 +1,24 @@
 from rest_framework import viewsets, permissions
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 
 class HasGroupPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        permission_types = view.permission_types
-        action = view.action
-        required_user_types = permission_types.get(action)
-        if "all" in required_user_types:
+        if settings.DEBUG:
+            return True
+        required_user_types = view.permission_types.get(view.action)
+        if required_user_types == None:
+            return request.user.user_type == "superadmin"
+        elif "all" in required_user_types or request.user.user_type == "superadmin":
             return True
         else:
-            user_type = request.user.user_type
-            if user_type == "superadmin":
-                return True
-            elif required_user_types == None:
-                return False
-            else:
-                return user_type in required_user_types
+            return request.user.user_type in required_user_types
 
 
 class BaseGenericViewSet(viewsets.GenericViewSet):
     model = None
+    out_serializer_class = None
     serializer_class = None
     queryset = None
     permission_classes = [HasGroupPermission]
@@ -33,6 +31,7 @@ class BaseGenericViewSet(viewsets.GenericViewSet):
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     model = None
+    out_serializer_class = None
     serializer_class = None
     queryset = None
     permission_classes = [HasGroupPermission]

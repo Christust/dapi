@@ -14,11 +14,11 @@ class UserViewSet(BaseGenericViewSet):
     out_serializer_class = serializers.UserOutSerializer
     queryset = serializer_class.Meta.model.objects.filter(is_active=True)
     permission_types = {
-        "list": ["all"],
-        "retrieve": ["all"],
-        "set_password": ["all"],
-        "create": ["all"],
-        "update": ["all"],
+        "list": ["admin"],
+        "retrieve": ["admin"],
+        "set_password": ["admin"],
+        "create": ["admin"],
+        "update": ["admin"],
     }
 
     def list(self, request):
@@ -65,19 +65,17 @@ class UserViewSet(BaseGenericViewSet):
     def set_password(self, request, pk=None):
         current_user = self.request.user
         user = self.get_object(pk)
-        if current_user == user or current_user.is_superuser:
-            password_serializer = serializers.PasswordSerializer(data=request.data)
-            if password_serializer.is_valid():
-                user.set_password(password_serializer.validated_data["password"])
-                user.save()
-                return Response(
-                    data={"message": "Password updated"}, status=status.HTTP_200_OK
-                )
+        password_serializer = serializers.PasswordSerializer(
+            data=request.data, context={"current_user": current_user, "user": user}
+        )
+        if password_serializer.is_valid():
+            user.set_password(password_serializer.validated_data["password"])
+            user.save()
             return Response(
-                data=password_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                data={"message": "Password updated"}, status=status.HTTP_200_OK
             )
         return Response(
-            data={"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED
+            data=password_serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
 
     def destroy(self, request, pk):
