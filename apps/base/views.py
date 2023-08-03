@@ -24,6 +24,8 @@ class BaseGenericViewSet(viewsets.GenericViewSet):
     permission_classes = [HasGroupPermission]
     permission_types = {}
     searched_object = None
+    offset = 0
+    limit = 100
 
     def get_object(self, pk):
         return get_object_or_404(self.queryset, pk=pk)
@@ -37,6 +39,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     permission_classes = [HasGroupPermission]
     permission_types = {}
     searched_object = None
+    offset = 0
+    limit = 100
 
     def get_object(self, pk):
         return get_object_or_404(self.queryset, pk=pk)
