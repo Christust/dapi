@@ -172,3 +172,9 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+# Swagger
+
+SWAGGER_SETTINGS = {
+    "DOC_EXPANSION":"none"
+}
