@@ -26,7 +26,11 @@ SECRET_KEY = "django-insecure-m=0^aefiw8-1=h%wxr!c8@m0uk$ubaf#bimy9bmxg@-_bap%*=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "127.0.0.1",
+    "dapi-env-2.eba-q7xkaamv.us-west-2.elasticbeanstalk.com",
+]
 
 
 # Application definition
@@ -153,9 +157,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 # CORS
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = ["http://dapi-env-2.eba-q7xkaamv.us-west-2.elasticbeanstalk.com"]
 
-CORS_ORIGIN_WHITELIST = []
+CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
 
 # Auth Rest
 REST_FRAMEWORK = {
