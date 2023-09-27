@@ -29,7 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "0.0.0.0",
     "127.0.0.1",
-    "daapi-53223c26c4dc.herokuapp.com"
+    "daapi-53223c26c4dc.herokuapp.com",
+    "https://dapinextpages.web.app",
 ]
 
 
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -146,7 +148,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "static/"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -159,9 +161,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 # CORS
-CORS_ALLOWED_ORIGINS = ["https://daapi-53223c26c4dc.herokuapp.com/"]
+CORS_ALLOWED_ORIGINS = [
+    "https://daapi-53223c26c4dc.herokuapp.com",
+    "http://localhost:3000",
+    "https://dapinextpages.web.app",
+]
 
-CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
+CORS_ORIGIN_WHITELIST = [
+    "https://daapi-53223c26c4dc.herokuapp.com",
+    "http://localhost:3000",
+    "https://dapinextpages.web.app",
+]
 
 # Auth Rest
 REST_FRAMEWORK = {
@@ -181,6 +191,4 @@ SIMPLE_JWT = {
 
 # Swagger
 
-SWAGGER_SETTINGS = {
-    "DOC_EXPANSION":"none"
-}
+SWAGGER_SETTINGS = {"DOC_EXPANSION": "none"}
