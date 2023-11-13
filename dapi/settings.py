@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "daapi-53223c26c4dc.herokuapp.com",
     "https://dapinextpages.web.app",
+    "http://moderatorem.pythonanywhere.com",
 ]
 
 
@@ -178,7 +179,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    # "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
 # SIMPLE JWT
