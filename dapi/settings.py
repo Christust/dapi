@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "daapi-53223c26c4dc.herokuapp.com",
     "https://dapinextpages.web.app",
-    "http://moderatorem.pythonanywhere.com",
+    "moderatorem.pythonanywhere.com",
 ]
 
 
