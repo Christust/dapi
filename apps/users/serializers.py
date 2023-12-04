@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apps.users.models import User
-from apps.branches.serializers import BranchSerializer
+# from apps.branches.serializers import BranchSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserOutSerializer(serializers.ModelSerializer):
-    branches = BranchSerializer(many=True, read_only=True)
+    # branches = BranchSerializer(many=True, read_only=True)
 
     class Meta:
         model = User

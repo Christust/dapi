@@ -11,9 +11,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # acciones de nuestro modelo
 from simple_history.models import HistoricalRecords
 
-from apps.branches.models import Branch
-
-
 # Create your models here.
 class UserManager(BaseUserManager):
     # Función base que utilizaran nuestras funciones para crear usuarios normales o superusuario
@@ -23,10 +20,7 @@ class UserManager(BaseUserManager):
         name: str,
         last_name: str,
         user_type: str,
-        tuition: str | None,
-        curp: str | None,
         password: str | None,
-        is_staff: bool,
         **extra_fields,
     ):
         """
@@ -39,9 +33,6 @@ class UserManager(BaseUserManager):
             name=name,
             last_name=last_name,
             user_type=user_type,
-            tuition=tuition,
-            curp=curp,
-            is_staff=is_staff,
             **extra_fields,
         )
 
@@ -59,8 +50,6 @@ class UserManager(BaseUserManager):
         name: str,
         last_name: str,
         user_type: str,
-        tuition: str | None = None,
-        curp: str | None = None,
         password: str | None = None,
         **extra_fields,
     ):
@@ -74,10 +63,7 @@ class UserManager(BaseUserManager):
             name,
             last_name,
             user_type,
-            tuition,
-            curp,
             password,
-            False,
             **extra_fields,
         )
 
@@ -88,8 +74,6 @@ class UserManager(BaseUserManager):
         name: str,
         last_name: str,
         user_type: str,
-        tuition: str | None = None,
-        curp: str | None = None,
         password: str | None = None,
         **extra_fields,
     ):
@@ -103,10 +87,7 @@ class UserManager(BaseUserManager):
             name,
             last_name,
             user_type,
-            tuition,
-            curp,
             password,
-            True,
             **extra_fields,
         )
 
@@ -116,8 +97,7 @@ class User(AbstractBaseUser):
     class UserType(models.TextChoices):
         SUPER_ADMIN = "superadmin"
         ADMIN = "admin"
-        TEACHER = "teacher"
-        STUDENT = "student"
+        COMMON = "common"
 
     # Atributo principal de nuestro modelo persoanlizado
     email = models.EmailField("Email", unique=True, max_length=100)
@@ -127,15 +107,9 @@ class User(AbstractBaseUser):
 
     last_name = models.CharField("Lastname", max_length=100, blank=False, null=False)
 
-    curp = models.CharField("CURP", max_length=100, blank=True, null=True)
-
-    tuition = models.CharField("Tuition", max_length=100, blank=True, null=True)
-
     user_type = models.CharField(
         "User type", max_length=20, choices=UserType.choices, blank=False, null=False
     )
-
-    branches = models.ManyToManyField(Branch)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -143,7 +117,6 @@ class User(AbstractBaseUser):
 
     # Atributos requeridos para nuestro mixin de permisos
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
 
     @property
     def full_name(self):
