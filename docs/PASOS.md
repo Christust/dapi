@@ -22,10 +22,8 @@ source venv/bin/activate
 Instalas las dependencias del proyecto:
 
 ```
-pip install Django
 pip install djangorestframework
 pip install django-simple-history
-pip install Pillow
 pip install drf-yasg
 pip install django-cors-headers
 pip install djangorestframework-simplejwt
